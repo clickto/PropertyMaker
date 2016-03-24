@@ -1,4 +1,4 @@
-#include <QObject>
+﻿#include <QObject>
 #include <QTextStream>
 #include <QFile>
 QString classname;
@@ -44,6 +44,8 @@ void declaration()
 		out <<QString("	%1 %2() const;").arg(type).arg(name) <<endl;
 		out << QString ("	void set%1%2(%3 _value);").arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type) << endl;
 	}
+	out << "	Q_INVOKABLE void upParams()\n	{\n		emit paramsChanged();\n	}"<<endl;
+
 	//声明属性的改变信号
 	out << "signals:"<<endl;
 	foreach(QStringList node, list) {
@@ -51,6 +53,7 @@ void declaration()
 		QString name = node.at(1);
 		out <<QString ("	void %1Changed();").arg(name) << endl;
 	}
+	out <<QString ("	void paramsChanged();") <<endl;
 
 	file.close();
 }
@@ -81,7 +84,7 @@ void define1()
 		QString type = node.at(0);
 		QString name = node.at(1);
 		out <<QString("%1 %2::%3 () const\n{\n	return m_dptr->%4;\n}").arg(type).arg(classname).arg(name).arg(name) <<endl;
-		out << QString ("void %1::set%2%3 (%4 _value)\n{\n	if ( m_dptr->%5 != _value) {\n		m_dptr->%5 = _value;\n		emit %5Changed();\n	}\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< endl;
+		out << QString ("void %1::set%2%3 (%4 _value)\n{\n	if ( m_dptr->%5 != _value) {\n		m_dptr->%5 = _value;\n		emit paramsChanged();\n	upParams();\n	}\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< endl;
 	}
 
 	file.close();
@@ -114,7 +117,7 @@ void define2()
 		QString type = node.at(0);
 		QString name = node.at(1);
 		out <<QString("%1 %2::%3() const\n{\n	return m_dptr->%4.attribute(\"value\").toDouble();\n}").arg(type).arg(classname).arg(name).arg(name) <<endl;
-		out << QString ("void %1::set%2%3(%4 _value)\n{\n	if ( %5() != _value) {\n		QString sValue = QString(\"%1\").arg(_value);\n		m_dptr->%5.setAttribute(\"value\", sValue);\n		emit %5Changed();\n	}\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< endl;
+		out << QString ("void %1::set%2%3(%4 _value)\n{\n	if ( %5() != _value) {\n		m_dptr->%5.setAttribute(\"value\", _value);\n		emit paramsChanged();\n	}\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< endl;
 	}
 
 	file.close();
@@ -168,5 +171,13 @@ int main(int argc, char * argv[])
 	addNode("qreal", "tgc8");
 	declaration();
 	define2();
+
+//	setClassName("MSamplingLine");
+//	addNode("qreal", "x1");
+//	addNode("qreal", "x2");
+//	addNode("qreal", "y1");
+//	addNode("qreal", "y2");
+//	declaration();
+//	define2();
 	return 0;
 }
