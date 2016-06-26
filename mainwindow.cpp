@@ -22,7 +22,9 @@ void MainWindow::on_pushButton_1_clicked()
 		QMessageBox::information(this, "Warning", "Please input classname first!");
 		return ;
 	}
-	creator.setClassName(ui->lineEdit_ClassName->text());
+	QString classname = ui->lineEdit_ClassName->text();
+	classname = classname.at(0).toUpper() + classname.right(classname.length() - 1);
+	creator.setClassName(classname);
 	QStringList list = ui->textEdit->toPlainText().split("\n");
 	foreach (QString str, list) {
 		QString str1, str2;

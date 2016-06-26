@@ -1,4 +1,4 @@
-QT += core gui widgets
+QT += core gui widgets xml
 SOURCES += \
     main.cpp \
     mainwindow.cpp \

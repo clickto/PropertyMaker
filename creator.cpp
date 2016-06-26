@@ -110,7 +110,7 @@ void Creator::define2()
 	QTextStream out(&file);
 
 	out << QString("#include \"%1.h\"").arg(classname)<<"\r\n";
-	out << QString("#inclue <QDomElement>\r\n");
+	out << QString("#include <QDomElement>\r\n");
 	out << QString("#define MODULE_INFO \"%1%2\"\r\n").arg(classname.at(0).toUpper()).arg(classname.right(classname.length() - 1));
 	//成员变量
 	out << QString("class %1Private {\r\npublic:\r\n").arg(classname)<<"\r\n";
@@ -123,14 +123,14 @@ void Creator::define2()
 	//构造函数
 	out << QString("	%1Private(QDomNode node): root(QDomNode())\r\n").arg(classname);
 	out << QString("	{\r\n		root = node.firstChildElement (MODULE_INFO);\r\n");
-	out << QString("		if (root.isNull() {\r\n");
-	out << QString("			QDomDocument doc = doc.createElement (MODULE_INFO)\r\n");
+	out << QString("		if (root.isNull()) {\r\n");
+	out << QString("			QDomDocument doc = doc.createElement (MODULE_INFO);\r\n");
 	foreach(QStringList node, list) {
 		QString name = node.at(1);
 		out << QString ("			%1 = doc.createElement(\"%1\");\r\n").arg(name);
-		out << QString ("			root.appendChild(%1);\r\n");
+		out << QString ("			root.appendChild(%1);\r\n").arg(name);
 	}
-	out << QString("			node.appendChild (root)\r\n");
+	out << QString("			node.appendChild (root);\r\n");
 
 	foreach(QStringList node, list) {
 		QString name = node.at(1);
@@ -148,7 +148,18 @@ void Creator::define2()
 	foreach(QStringList node, list) {
 		QString type = node.at(0);
 		QString name = node.at(1);
-		out <<QString("%1 %2::%3() const\r\n{\r\n	return m_dptr->%4.attribute(\"value\").toInt();\r\n}").arg(type).arg(classname).arg(name).arg(name) <<"\r\n";
+		QString rType = "";
+		if (type == "int") {
+			rType = ".toInt()";
+		} else if (type == "float") {
+			rType = ".toFloat()";
+		} else if (type == "double") {
+			rType = ".toDouble()";
+		} else if (type == "long") {
+			rType = ".toLong()";
+		}
+
+		out <<QString("%1 %2::%3() const\r\n{\r\n	return m_dptr->%4.attribute(\"value\")%5;\r\n}").arg(type).arg(classname).arg(name).arg(name).arg(rType) <<"\r\n";
 		out << QString ("void %1::set%2%3(%4 value)\r\n{\r\n	if ( %5() != value) {\r\n		m_dptr->%5.setAttribute(\"value\", _value);\r\n		emit %5Changed();\r\n		emit paramsChanged();\r\n	}\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
 	}
 
