@@ -1,5 +1,5 @@
 目的：
-	本工程用来自动生成代码
+	属性自动生成器
 来源：
 	QObject中的Q_PROPERTY属性的定义和实现,代码量较大的问题，手动写起来太累了，于是就有了本工程 
 简介：
@@ -18,11 +18,12 @@
 	Q_PROPERTY(int resolution READ resolution WRITE setResolution NOTIFY resolutionChanged)
 	Q_PROPERTY(int triplex READ triplex WRITE setTriplex NOTIFY triplexChanged)
 */
-	
-	本工程中有三个接口
-	//设置类的名称
-	setClassName(QString classname)
-	//增加一个属性, type 为属性的数据类型，name 为属性的命名
-	addNode(QString type, QString name)
-	//生成代码 将生成代码，保存在运行目录下的out.txt文本文件中。注：如果记事本不能识别\n换行符，请使用notepad++等替代工具打开
-	make()
+
+在软件界面输入类名，属性，然后按生成按钮1 或者生成按钮2 就可以生成相应的 .h 和 .cpp文件
+
+生成按钮1 是简单的数据封装
+生成按钮2 是把封装数据用xml的方式存储获取初始值，并且注册到engine中去。
+
+输入的类名 首字母会自动被大写
+输入的属性用逗号隔开
+属性首位的空格等非法字符会自动被剔除

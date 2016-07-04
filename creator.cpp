@@ -1,5 +1,6 @@
 #include "creator.h"
 #include <QDebug>
+#include "ProbeKey.h"
 void Creator::setClassName(QString name)
 {
 	classname = name;
@@ -23,6 +24,7 @@ void Creator::declaration()
 
 	out << QString ("#ifndef %1_H").arg(classname.toUpper())<<"\r\n";
 	out << QString ("#define %1_H").arg(classname.toUpper()) <<"\r\n";
+	out << QString ("#include<QObject>\r\n");
 	out << QString ("class %1Private;").arg(classname)<<"\r\n";
 	out << QString ("class %1 : public QObject {").arg(classname) << "\r\n";
 	out << "	Q_OBJECT" <<"\r\n";
@@ -84,7 +86,7 @@ void Creator::define1()
 
 	//实现部分
 	out << QString("};") << "\r\n";
-	out << QString("%1::%1(QObject parent) : QObject(parent), m_dptr(new %1Private)").arg(classname)<<"\r\n";
+	out << QString("%1::%1(QObject *parent) : QObject(parent), m_dptr(new %1Private)").arg(classname)<<"\r\n";
 	out << QString("{\r\n}\r\n");
 	out << QString("%1::~%1()\r\n{\r\n	delete m_dptr;\r\n}\r\n").arg(classname);
 
@@ -92,7 +94,7 @@ void Creator::define1()
 		QString type = node.at(0);
 		QString name = node.at(1);
 		out <<QString("%1 %2::%3 () const\r\n{\r\n	return m_dptr->%4;\r\n}").arg(type).arg(classname).arg(name).arg(name) <<"\r\n";
-		out << QString ("void %1::set%2%3 (%4 value)\r\n{\r\n	if ( m_dptr->%5 != value) {\r\n		m_dptr->%5 = value;\r\n		emit %5Changed();\r\n		emit paramsChanged();\r\n	}\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
+		out << QString ("void %1::set%2%3 (%4 value)\r\n{\r\n	if ( m_dptr->%5 == value) return;\r\n	m_dptr->%5 = value;\r\n	emit %5Changed();\r\n	emit paramsChanged();\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
 	}
 
 	file.close();
@@ -160,7 +162,7 @@ void Creator::define2()
 		}
 
 		out <<QString("%1 %2::%3() const\r\n{\r\n	return m_dptr->%4.attribute(\"value\")%5;\r\n}").arg(type).arg(classname).arg(name).arg(name).arg(rType) <<"\r\n";
-		out << QString ("void %1::set%2%3(%4 value)\r\n{\r\n	if ( %5() != value) {\r\n		m_dptr->%5.setAttribute(\"value\", _value);\r\n		emit %5Changed();\r\n		emit paramsChanged();\r\n	}\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
+		out << QString ("void %1::set%2%3(%4 value)\r\n{\r\n	if ( %5() == value) return;\r\n	m_dptr->%5.setAttribute(\"value\", _value);\r\n	emit %5Changed();\r\n	emit paramsChanged();\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
 	}
 
 	file.close();

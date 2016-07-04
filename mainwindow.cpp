@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QDebug>
+#include "ProbeKey.h"
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -18,14 +19,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_1_clicked()
 {
-	if (ui->lineEdit_ClassName->text().isEmpty()) {
+	QString name = ui->lineEdit_ClassName->text();
+	if (name.isEmpty()) {
 		QMessageBox::information(this, "Warning", "Please input classname first!");
 		return ;
 	}
-	QString classname = ui->lineEdit_ClassName->text();
-	classname = classname.at(0).toUpper() + classname.right(classname.length() - 1);
+	QString classname = name.at(0).toUpper() + name.right(name.size() - 1);
+
 	creator.setClassName(classname);
 	QStringList list = ui->textEdit->toPlainText().split("\n");
+	if (list.isEmpty()) {
+		QMessageBox::information(this, "Warning", "Please input at last one property!");
+		return;
+	}
 	foreach (QString str, list) {
 		QString str1, str2;
 		str1 = str.split(",").at(0);
@@ -40,12 +46,19 @@ void MainWindow::on_pushButton_1_clicked()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-	if (ui->lineEdit_ClassName->text().isEmpty()) {
+	QString name = ui->lineEdit_ClassName->text();
+	if (name.isEmpty()) {
 		QMessageBox::information(this, "Warning", "Please input classname first!");
 		return ;
 	}
-	creator.setClassName(ui->lineEdit_ClassName->text());
+	QString classname = name.at(0).toUpper() + name.right(name.size() - 1);
+
+	creator.setClassName(classname);
 	QStringList list = ui->textEdit->toPlainText().split("\n");
+	if (list.isEmpty()) {
+		QMessageBox::information(this, "Warning", "Please input at last one property!");
+		return;
+	}
 	foreach (QString str, list) {
 		QString str1, str2;
 		str1 = str.split(",").at(0);
