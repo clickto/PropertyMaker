@@ -14,6 +14,7 @@ public:
 	void declaration();
 	void define1();
 	void define2();
+
 private:
 	QString classname;
 	QList<QStringList> list;

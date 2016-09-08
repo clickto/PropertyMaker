@@ -1,6 +1,6 @@
 #include "creator.h"
 #include <QDebug>
-#include "ProbeKey.h"
+
 void Creator::setClassName(QString name)
 {
 	classname = name;
@@ -45,8 +45,13 @@ void Creator::declaration()
 		QString type = node.at(0);
 		QString name = node.at(1);
 		out <<QString("	%1 %2() const;").arg(type).arg(name) <<"\r\n";
+	}
+	foreach(QStringList node, list) {
+		QString type = node.at(0);
+		QString name = node.at(1);
 		out << QString ("	void set%1%2(%3 value);").arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type) << "\r\n";
 	}
+
 	out << "	Q_INVOKABLE void upParams()\n	{\n		emit paramsChanged();\n	}"<<"\r\n";
 
 	//声明属性的改变信号
