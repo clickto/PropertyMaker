@@ -11,7 +11,10 @@ void Creator::addNode(QString type, QString name)
 	str<<type<<name;
 	list.append(str);
 }
-
+void Creator::clearNode()
+{
+	list.clear();
+}
 void Creator::declaration()
 {
 	QString name = QString("%1.h").arg(classname);

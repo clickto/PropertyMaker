@@ -10,6 +10,7 @@ class Creator
 {
 public:
 	void setClassName(QString name);
+	void clearNode();
 	void addNode(QString type, QString name);
 	void declaration();
 	void define1();

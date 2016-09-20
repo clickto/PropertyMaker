@@ -33,6 +33,7 @@ void MainWindow::on_pushButton_1_clicked()
 		QMessageBox::information(this, "Warning", "Please input at last one property!");
 		return;
 	}
+	creator.clearNode();
 	foreach (QString str, list) {
 		QString str1, str2;
 		str1 = str.split(",").at(0);
@@ -60,6 +61,7 @@ void MainWindow::on_pushButton_2_clicked()
 		QMessageBox::information(this, "Warning", "Please input at last one property!");
 		return;
 	}
+	creator.clearNode();
 	foreach (QString str, list) {
 		QString str1, str2;
 		str1 = str.split(",").at(0);
