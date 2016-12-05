@@ -1,4 +1,4 @@
-#include "creator.h"
+﻿#include "creator.h"
 #include <QDebug>
 
 void Creator::setClassName(QString name)
@@ -76,7 +76,7 @@ void Creator::define1()
 {
 	QString name = QString("%1.cpp").arg(classname);
 	QFile file(name);
-	if (!file.open(QIODevice::ReadWrite)) {
+	if (!file.open(QIODevice::WriteOnly)) {
 		qDebug() <<__FILE__<<__LINE__<<"open file failed.";
 		return ;
 	}
@@ -134,12 +134,17 @@ void Creator::define2()
 	out << QString("	%1Private(QDomNode node): root(QDomNode())\r\n").arg(classname);
 	out << QString("	{\r\n		root = node.firstChildElement (MODULE_INFO);\r\n");
 	out << QString("		if (root.isNull()) {\r\n");
-	out << QString("			QDomDocument doc = doc.createElement (MODULE_INFO);\r\n");
+	out << QString("			QDomDocument doc = node.toDocument();\r\n");
+	out << QString("			root = doc.createElement(MODULE_INFO);\r\n");
 	foreach(QStringList node, list) {
 		QString name = node.at(1);
-		out << QString ("			%1 = doc.createElement(\"%1\");\r\n").arg(name);
+		out << QString ("			%1 = doc.createElement(\"%1\");\r\n").arg(name);	
+	}
+	foreach(QStringList node, list) {
+		QString name = node.at(1);
 		out << QString ("			root.appendChild(%1);\r\n").arg(name);
 	}
+
 	out << QString("			node.appendChild (root);\r\n");
 
 	foreach(QStringList node, list) {
@@ -170,7 +175,7 @@ void Creator::define2()
 		}
 
 		out <<QString("%1 %2::%3() const\r\n{\r\n	return m_dptr->%4.attribute(\"value\")%5;\r\n}").arg(type).arg(classname).arg(name).arg(name).arg(rType) <<"\r\n";
-		out << QString ("void %1::set%2%3(%4 value)\r\n{\r\n	if ( %5() == value) return;\r\n	m_dptr->%5.setAttribute(\"value\", _value);\r\n	emit %5Changed();\r\n	emit paramsChanged();\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
+		out << QString ("void %1::set%2%3(%4 value)\r\n{\r\n	if ( %5() == value) return;\r\n	m_dptr->%5.setAttribute(\"value\", value);\r\n	emit %5Changed();\r\n	emit paramsChanged();\r\n}").arg(classname).arg(name.at(0).toUpper()).arg(name.mid(1, name.size())).arg(type).arg(name)<< "\r\n";
 	}
 
 	file.close();
